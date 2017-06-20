@@ -39,7 +39,7 @@ size_t EEPROMStream::write(uint8_t b){
 
 int EEPROMStream::peek(){
   if (available()){
-    return EEPROM.read(_start + _position + 1);
+    return EEPROM.read(_start + _position);
   } else {
     return -1;
   }
@@ -55,4 +55,18 @@ void EEPROMStream::flush(){
 
 void EEPROMStream::rewind(){
   _position = 0;
+}
+
+int EEPROMStream::position() {
+    return _position;
+}
+
+void EEPROMStream::seek(int position) {
+    if (position < _length) {
+        _position = position;
+    }
+}
+
+int EEPROMStream::length() {
+    return _length;
 }

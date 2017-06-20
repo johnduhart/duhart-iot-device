@@ -8,48 +8,23 @@
 #include <msgpck.h>
 
 #include "Environmental.hpp"
+#include "Configuration.h"
 #include "EEPROMStream.h"
 
 EnvSensor *pSensor;
+ConfigurationObject Config;
 
-void writeConfig() {
-    EEPROMStream stream(0, 512);
-    stream.init();
+void initialConfig() {
+    ConfigurationObject c;
 
-    msgpck_write_bool(&stream, true);
-    msgpck_write_integer(&stream, 54);
-    msgpck_write_string(&stream, "Hello There!");
+    config_wifi_network_t *network = new config_wifi_network_t;
+    network->ssid = new String("__");
+    network->password = new String("__");
 
-    stream.flush();
-}
+    c.pWifiConfig = new config_wifi_t;
+    c.pWifiConfig->networks = network;
 
-void readConfig() {
-    EEPROMStream stream(0, 512);
-    stream.init();
-
-    bool a;
-    uint8_t b;
-    char buf[16];
-    uint bufSize;
-
-    msgpck_read_bool(&stream, &a);
-    msgpck_read_integer(&stream, &b, 1);
-    msgpck_read_string(&stream, buf, 16, &bufSize);
-
-    // Copy the contents of the array
-    char c[bufSize + 1];
-    memcpy(c, buf, sizeof(c[0]) * bufSize);
-    c[bufSize] = '\0';
-
-    Serial.println(a);
-    Serial.println(b);
-    Serial.println(c);
-
-    Serial.println();
-    Serial.println(c[0]);
-    Serial.println(c[1]);
-    Serial.println(c[11]);
-    Serial.println();
+    c.write();
 }
 
 void setup() {
@@ -62,7 +37,16 @@ void setup() {
 
     //delay(2000);
     //writeConfig();
-    readConfig();
+    //readConfig();
+    //Serial.println("Writing initial configuration...");
+    //initialConfig();
+
+    Serial.println("Reading inital config.");
+    Config.read();
+
+    Serial.println(*Config.pWifiConfig->networks->ssid);
+    Serial.println(*Config.pWifiConfig->networks->password);
+    Serial.println();
 }
 
 void loop() {

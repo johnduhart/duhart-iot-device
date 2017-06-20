@@ -14,6 +14,9 @@ public:
   int peek();
   void flush();
   void rewind();
+  int position();
+  void seek(int position);
+  int length();
 
 private:
     int _start;
